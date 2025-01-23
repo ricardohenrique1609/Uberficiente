@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <title>Página de Cadastro</title>
+    <style>
+        /* Estilo Geral */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to right, #fbfbfc, #d4d0e7);
+            color: #4a4a66;
+            flex-direction: column;
+        }
+
+        /* Estilos para o Formulário */
+        .login {
+            width: 350px;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 60px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+
+        .login:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            transform: scale(1.03);
+        }
+
+        /* Efeito de tremida em caso de erro */
+        .login.error {
+            background-color: #ffcccc;
+            animation: shake 0.4s ease;
+        }
+
+        /* Cor de sucesso */
+        .login.success {
+            background-color: #cce5ff;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        .title {
+            color: #4A90E2;
+            font-size: 1.6em;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .login input {
+            font-size: 1em;
+            padding: 14px;
+            width: 100%;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .login input:focus {
+            outline: none;
+            border-color: #4A90E2;
+            box-shadow: 0 0 8px rgba(74, 144, 226, 0.3);
+        }
+
+        .login button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg, #4A90E2, #357ABD);
+            color: #fff;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s, transform 0.1s;
+        }
+
+        .login button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .login button:active {
+            transform: scale(0.98);
+            background: #2E5E9E;
+        }
+
+        .message {
+            background-color: #ff0a0a;
+            text-align: center;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 8px;
+            font-size: 1em;
+            display: none;
+        }
+
+        .success {
+            background-color: #cce5ff;
+            color: white;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .error {
+            background-color: #ffcccc;
+            color: white;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+    </style>
+</head>
+<body>
+    <!-- Contêiner de Cadastro -->
+    <div class="login" id="loginContainer">
+        <h2 class="title"><i class="icon icon-user-1" aria-hidden="true"></i> Cadastro</h2>
+        <form id="registerForm">
+            <input type="text" id="username" placeholder="Nome de usuário" required>
+            <input type="email" id="email" placeholder="E-mail" required>
+            <input type="password" id="password" placeholder="Senha" required>
+            <button type="submit">
+                <i class="spinner fa fa-spinner fa-spin" aria-hidden="true"></i>
+                <span class="state">Registrar</span>
+            </button>
+        </form>
+        <div class="message success" id="successMessage">Usuário registrado com sucesso!</div>
+        <div class="message error" id="errorMessage">Erro ao registrar usuário!</div>
+    </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const loginContainer = document.getElementById('loginContainer');
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+
+            fetch('http://localhost:3000/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, email, password }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === 'Usuário registrado com sucesso!') {
+                    successMessage.style.display = 'block';
+                    errorMessage.style.display = 'none';
+                    loginContainer.classList.remove('error');
+                    loginContainer.classList.add('success');
+
+                    setTimeout(function() {
+                        window.location.href = 'login_tela.html';
+                    }, 2000);
+                } else {
+                    errorMessage.style.display = 'block';
+                    successMessage.style.display = 'none';
+                    loginContainer.classList.add('error');
+                    loginContainer.classList.remove('success');
+                }
+            })
+            .catch(() => {
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+                loginContainer.classList.add('error');
+                loginContainer.classList.remove('success');
+                errorMessage.textContent = 'Erro ao registrar usuário. Tente novamente.';
+            });
+        });
+    </script>
+</body>
+</html>

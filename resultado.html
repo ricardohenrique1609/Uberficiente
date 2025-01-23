@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Informações da Corrida</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* O restante do seu CSS permanece inalterado */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to right, #fbfbfc, #d4d0e7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+
+    .container {
+      width: 900px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      display: flex;
+      flex-direction: row;
+      transition: all 0.3s ease;
+    }
+
+    .container:hover {
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+      transform: scale(1.03);
+    }
+
+    .mapa {
+      flex: 1.5;
+      background-color: #e0e0e0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      transition: background-color 0.3s;
+    }
+
+    .mapa:hover {
+      background-color: #d1d1d1;
+    }
+
+    #map {
+      height: 100%;
+      width: 100%;
+    }
+
+    .info {
+      flex: 2;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.3s, box-shadow 0.3s;
+    }
+
+    .info:hover {
+      background-color: #f8f8f8;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .info p {
+      font-size: 1.2em;
+      color: #666;
+      margin-bottom: 15px;
+      transition: color 0.3s;
+    }
+
+    .info p:hover {
+      color: #333;
+    }
+
+    .info h3 {
+      font-size: 2em;
+      color: #333;
+    }
+
+    .distancia, .tempo {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .motorista {
+      display: flex;
+      align-items: center;
+      margin-bottom: 25px;
+      border-top: 2px solid #e0e0e0;
+      padding-top: 20px;
+    }
+
+    .motorista img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin-right: 20px;
+      transition: transform 0.3s;
+    }
+
+    .motorista:hover img {
+      transform: scale(1.1);
+    }
+
+    .motorista .detalhes {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .detalhes h3 {
+      margin: 0;
+      font-size: 1.6em;
+      color: #000;
+      font-weight: bold;
+    }
+
+    .detalhes p {
+      font-size: 1.2em;
+      color: #555;
+      margin: 6px 0;
+    }
+
+    .detalhes .rating {
+      color: #ff9900;
+    }
+
+    .contato {
+      display: flex;
+      gap: 15px;
+      margin-top: auto;
+    }
+
+    .contato button {
+      flex: 1;
+      padding: 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1.2em;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+
+    .contato button:hover {
+      background-color: #0056b3;
+      transform: translateY(-5px);
+    }
+
+    .mensagem {
+      background-color: #f1f1f1;
+    }
+
+    .chamada {
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    /* Estilo para o rodapé */
+    footer {
+      width: 100%;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      font-size: 0.9em;
+    }
+
+    footer p {
+      margin: 0;
+    }
+  </style>
+
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBh-cMlAvJbpA3-UowuRzAmIkoTmhw7SRo&callback=initMap" async defer></script>
+  <script>
+    let map, geocoder;
+    let pickupLocation, dropoffLocation;
+
+    const drivers = [
+      { name: "João", plate: "ABC1D23", rating: 4.8, car: "Chevrolet Onix Preto", image: "motorista1.jpg" },
+      { name: "Maria", plate: "XYZ9G87", rating: 4.9, car: "Fiat Uno Vermelho", image: "motorista2.jpg" },
+      { name: "Carlos", plate: "QWE4H56", rating: 5.0, car: "Hyundai HB20 Azul", image: "motorista3.jpg" },
+      { name: "Ana", plate: "ASD2F34", rating: 4.7, car: "Renault Sandero Prata", image: "motorista4.jpg" },
+      { name: "Bruno", plate: "ZXC5K67", rating: 4.6, car: "Volkswagen Gol Branco", image: "motorista5.jpg" }
+    ];
+
+    function initMap() {
+      geocoder = new google.maps.Geocoder();
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: -23.5505, lng: -46.6333 },
+        zoom: 12,
+      });
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const pickupAddress = urlParams.get('pickup');
+      const dropoffAddress = urlParams.get('dropoff');
+      if (pickupAddress) geocodeAddress(pickupAddress, 'pickup');
+      if (dropoffAddress) geocodeAddress(dropoffAddress, 'dropoff');
+
+      displayRandomDriver();
+    }
+
+    function geocodeAddress(address, type) {
+      geocoder.geocode({ address: address }, (results, status) => {
+        if (status === "OK") {
+          const location = results[0].geometry.location;
+          if (type === 'pickup') {
+            pickupLocation = location;
+            addMarker(location, "Início", 'http://maps.google.com/mapfiles/ms/icons/green-dot.png');
+            map.setCenter(location);  // Centraliza o mapa no local de "pickup"
+          } else if (type === 'dropoff') {
+            dropoffLocation = location;
+            addMarker(location, "Destino", 'http://maps.google.com/mapfiles/ms/icons/red-dot.png');
+          }
+          if (pickupLocation && dropoffLocation) calculateDistanceAndPrice();
+        } else {
+          alert("Geocodificação falhou: " + status);
+        }
+      });
+    }
+
+    function addMarker(location, title, iconUrl) {
+      new google.maps.Marker({
+        position: location,
+        map: map,
+        title: title,
+        icon: iconUrl,
+      });
+    }
+
+    function calculateDistanceAndPrice() {
+      const service = new google.maps.DistanceMatrixService();
+      service.getDistanceMatrix(
+        {
+          origins: [pickupLocation],
+          destinations: [dropoffLocation],
+          travelMode: 'DRIVING',
+        },
+        (response, status) => {
+          if (status === 'OK') {
+            const distance = response.rows[0].elements[0].distance.value / 1000;
+            const duration = response.rows[0].elements[0].duration.value / 60;
+            const pricePerKm = 5.0;
+            const totalPrice = distance * pricePerKm;
+
+            document.querySelector(".info .distancia p").innerText = `${distance.toFixed(2)} km de distância`;
+            document.querySelector(".info .tempo h3").innerText = `${duration.toFixed(0)} min`;
+            document.querySelector(".info .preco p").innerText = `Preço estimado: R$ ${totalPrice.toFixed(2)}`;
+          }
+        }
+      );
+    }
+
+    function displayRandomDriver() {
+      const driver = drivers[Math.floor(Math.random() * drivers.length)];
+      document.querySelector(".motorista img").src = driver.image;
+      document.querySelector(".detalhes h3").innerText = driver.plate;
+      document.querySelector(".detalhes p").innerText = driver.car;
+      document.querySelector(".motorista .detalhes .rating").innerText = `Avaliação: ${driver.rating}`;
+      document.querySelector(".motorista .detalhes .nome").innerText = driver.name;
+    }
+
+    function fetchCardInfo() {
+      const userId = 1; // Substitua pelo ID real do usuário
+    fetch(`/api/card-info?user_id=${userId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.card_start) {
+                // Exibe os 4 primeiros números do cartão, ocultando o resto
+                document.getElementById('card-info').textContent = `Cartão: ${data.card_start}**** **** ****`;
+            } else {
+                document.getElementById('card-info').textContent = 'Cartão não encontrado.';
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao buscar informações do cartão:', error);
+            document.getElementById('card-info').textContent = 'Erro ao carregar informações.';
+        });
+}
+
+// Chama a função quando a página carregar
+window.onload = function() {
+  initMap(); // Inicialize o mapa
+  fetchCardInfo(); // Carregue as informações do cartão
+};
+
+
+
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div class="mapa">
+      <div id="map"></div>
+    </div>
+
+    <div class="info">
+      <div class="distancia">
+        <p>Calculando distância...</p>
+      </div>
+      <div class="tempo">
+        <h3>Calculando tempo...</h3>
+      </div>
+      <div class="preco">
+        <p>Preço estimado: Calculando preço...</p>
+      </div>
+
+      <div class="motorista">
+        <img src="motorista.jpg" alt="Foto do motorista">
+        <div class="detalhes">
+          <h3 class="nome">Nome do Motorista</h3> <!-- Nome do motorista adicionado -->
+          <p class="rating">Avaliação</p>
+          <h3>Placa do Carro</h3>
+          <p>Modelo e Cor do Carro</p>
+        
+        </div>
+      </div>
+
+      <p>Informações do motorista</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2024 Uberficiente. Todos os direitos reservados.</p>
+  </footer>
+</body>
+</html>
