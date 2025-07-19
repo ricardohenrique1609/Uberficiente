@@ -6,16 +6,16 @@ An inclusive and efficient mobility platform inspired by the Uber model, designe
 
 ## 📌 Project Structure
 
-📁 UberFiciente/
-├── 📁 json/
+UberFiciente/
+├── json/
 │   ├── package-lock.json
 │   ├── package.json
-│   └── settings.json  
-├── 📁 public/  
+│   └── settings.json
+├── public/
 │   ├── html/
-│   ├── imagens/  
-│   └── js/    
-└── 📄 README.md
+│   ├── imagens/
+│   └── js/
+└── README.md
 
 ---
 
@@ -81,8 +81,7 @@ An inclusive and efficient mobility platform inspired by the Uber model, designe
 ## 👨‍💻 Author
 
 **Ricardo Henrique Ramos Silva**  
-[LinkedIn](https://linkedin.com/in/ricardo-henrique-28939b275) | [Portfolio](https://curriculoricardo.netlify.app/) | [GitHub](https://github.com/ricardohenrique1609)
-
+[LinkedIn](https://linkedin.com/in/ricardo-henrique-28939b275) | [Portfolio](https://curriculoricardo.netlify.app/) 
 ---
 
 ⭐️ If this project inspired you, consider leaving a star on the repository!
