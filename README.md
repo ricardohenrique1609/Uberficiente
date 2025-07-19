@@ -16,7 +16,7 @@ UberFiciente/
 │   ├── imagens/
 │   └── js/
 └── README.md
-```plaintext
+```
 
 
 ## 🚀 Features
