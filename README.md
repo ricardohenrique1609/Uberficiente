@@ -6,16 +6,16 @@ An inclusive and efficient mobility platform inspired by the Uber model, designe
 
 ## 📌 Project Structure
 
-📁 UberFiciente/  
+📁 UberFiciente/
 ├── 📁 json/
-│   └── 📁 package-lock.json
-│   ├── 📁 package.json
-│   ├── 📁 settings.json  
+│   ├── package-lock.json
+│   ├── package.json
+│   └── settings.json  
 ├── 📁 public/  
-│   └── 📁 html/
-│   ├── 📁 imagens/  
-│   ├── 📁 js/    
-└── 📄 README.md  
+│   ├── html/
+│   ├── imagens/  
+│   └── js/    
+└── 📄 README.md
 
 ---
 
@@ -72,7 +72,8 @@ An inclusive and efficient mobility platform inspired by the Uber model, designe
 
 ## 📷 Badge
 
-![UberFiciente Badge](https://raw.githubusercontent.com/ricardohenrique1609/Uberficiente/main/public/imagens/badge_uberficiente.png)
+<img src="https://raw.githubusercontent.com/ricardohenrique1609/Uberficiente/main/public/imagens/badge_uberficiente.png" alt="UberFiciente Badge" width="250"/>
+
 
 
 ---
