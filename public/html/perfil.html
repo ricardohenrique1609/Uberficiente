@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil do Usuário</title>
+    <style>
+        /* Estilos do perfil */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+        }
+        body {
+            background: linear-gradient(to right, #f2f2f2, #d0d6f2);
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column; /* Garante que o conteúdo fique alinhado no eixo vertical */
+        }
+        .profile-container {
+            max-width: 600px;
+            width: 100%;
+            background-color: #fff;
+            padding: 45px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            border-color: #4CAF50;
+            border-radius: 12px; /* Adiciona borda arredondada */
+            transition: all 0.3s ease; /* Transição suave para o efeito hover */
+        }
+        /* Efeito de hover para o container */
+        .profile-container:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Aumenta a sombra ao passar o mouse */
+            transform: translateY(-5px); /* Levanta o container ao passar o mouse */
+            border-color: #FF6347; /* Muda a borda para cor de destaque */
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        .profile-header img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: 4px solid #4CAF50;
+            transition: all 0.3s ease;
+        }
+        /* Efeito de hover para a imagem de perfil */
+        .profile-header img:hover {
+            transform: scale(1.05); /* Aumenta um pouco a imagem ao passar o mouse */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Aumenta a sombra no hover */
+            border-color: #FF6347; /* Muda a cor da borda no hover */
+        }
+        .user-info, .ride-list, .card-list {
+            margin-top: 20px;
+        }
+        .ride-item, .card-item {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+        }
+        /* Efeito de hover para os itens de corrida e cartão */
+        .ride-item:hover, .card-item:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Aumenta a sombra ao passar o mouse */
+            border-color: #4CAF50; /* Muda a borda para verde */
+            transform: translateY(-3px); /* Levanta um pouco o item */
+        }
+        h3 {
+            margin-bottom: 10px;
+            font-size: 1.25rem;
+            color: #444;
+        }
+        p {
+            margin: 5px 0;
+        }
+        .price {
+            font-weight: bold;
+            color: #2d8cde;
+        }
+
+        footer {
+            width: 100%; /* Faz o rodapé ocupar toda a largura */
+            background-color: #3a3a3a;
+            color: white;
+            text-align: center; /* Centraliza o texto */
+            padding: 20px;
+            margin-top: 40px;
+            opacity: 0;
+            animation: fadeInFooter 2s forwards;  /* Animação de fade-in aplicada ao rodapé */
+            animation-delay: 2.5s;  /* Atraso progressivo */
+        }
+
+        footer a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="profile-header">
+            <div>
+                <h3>Nome</h3>
+                <h2 id="username">Carregando...</h2>
+                <p id="email"></p>
+            </div>
+            <img id="profile-picture" src="" alt="Foto do perfil">
+        </div>
+        <div class="user-info">
+            <h3>Informações do Usuário</h3>
+            <p>Email: <span id="user-email"></span></p>
+        </div>
+        
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Uberficiente | <a href="privacy.html">Política de Privacidade</a> | <a href="terms.html">Termos de Serviço</a></p>
+    </footer>
+    <script>
+        // Substitua este ID com o correto
+        const userId = 53; // Pegar o ID do usuário logado
+
+        async function fetchProfile() {
+            try {
+                const response = await fetch(`http://localhost:3000/api/profile/${userId}`);
+                const data = await response.json();
+
+                // Atualiza os dados do usuário
+                document.getElementById('username').innerText = data.user.username;
+                document.getElementById('user-email').innerText = data.user.email;
+                document.getElementById('profile-picture').src = data.user.profile_picture || 'default-avatar.png';
+
+                // Atualiza as corridas
+                const ridesContainer = document.getElementById('rides');
+                data.rides.forEach(ride => {
+                    const rideElement = document.createElement('div');
+                    rideElement.className = 'ride-item';
+                    rideElement.innerHTML = `  
+                        <p>Origem: ${ride.pickup_location}</p>
+                        <p>Destino: ${ride.dropoff_location}</p>
+                        <p>Preço: <span class="price">R$${ride.ride_price}</span></p>
+                        <p>Data: ${new Date(ride.ride_created_at).toLocaleString()}</p>
+                    `;
+                    ridesContainer.appendChild(rideElement);
+                });
+
+                // Atualiza os cartões
+                const cardsContainer = document.getElementById('cards');
+                data.cards.forEach(card => {
+                    const cardElement = document.createElement('div');
+                    cardElement.className = 'card-item';
+                    cardElement.innerHTML = ` 
+                        <p>Nome do titular: ${card.card_holder}</p>
+                        <p>Número: **** **** **** ${card.card_number.slice(-4)}</p>
+                        <p>Validade: ${card.expiry_date}</p>
+                    `;
+                    cardsContainer.appendChild(cardElement);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar o perfil:', error);
+            }
+        }
+
+        fetchProfile();
+    </script>
+</body>
+</html>
