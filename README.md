@@ -3,8 +3,21 @@
 An inclusive and efficient mobility platform inspired by the Uber model, designed to connect people with disabilities to drivers with accessible vehicles. The project promotes **autonomy, accessibility, and social inclusion**, using modern technologies and geospatial APIs.
 
 ---
+## 📌 Project Structure
 
-<pre> ## 📌 Project Structure ```plaintext UberFiciente/ ├── json/ │ ├── package-lock.json │ ├── package.json │ └── settings.json ├── public/ │ ├── html/ │ ├── imagens/ │ └── js/ └── README.md ``` </pre>
+```plaintext
+UberFiciente/
+├── json/
+│   ├── package-lock.json
+│   ├── package.json
+│   └── settings.json
+├── public/
+│   ├── html/
+│   ├── imagens/
+│   └── js/
+└── README.md
+
+
 ## 🚀 Features
 
 ### 1. **User Registration & Login**
